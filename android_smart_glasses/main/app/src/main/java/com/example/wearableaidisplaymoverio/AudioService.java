@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.example.wearableaidisplaymoverio.utils.AES;
+import com.example.wearableaidisplaymoverio.utils.OsmAndHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -55,7 +56,7 @@ public class AudioService extends Service {
     public static final String CHANNEL_ID = "AudioServiceChannel";
 
     //socket info
-    static String SERVER_IP = "18.191.190.218";
+    static String SERVER_IP = "192.168.1.185";
     static int SERVER_PORT = 4449;
     private static int mConnectState = 0;
 
@@ -334,6 +335,7 @@ public class AudioService extends Service {
         currentlySendingAudio = true;
         startStreaming();
     }
+
     public void StopRecorder() {
         Log.i(TAG, "Stopping the audio stream");
         currentlySendingAudio = false;
@@ -341,8 +343,18 @@ public class AudioService extends Service {
     }
 
     private void startStreaming() {
-        Log.i(TAG, "Starting the background thread (in this foreground service) to read the audio data");
 
+        Log.i(TAG, "Starting the background thread (in this foreground service) to read the audio data");
+        OsmAndHelper osmAndHelper = new OsmAndHelper(new android.app.Activity(), 0,
+                new OsmAndHelper.OnOsmandMissingListener() {
+            @Override
+            public void osmandMissing() {
+
+            }
+        });
+        Log.i(TAG, "calling osmandHelper method");
+        osmAndHelper.navigateSearch("sjc",10.0,10.0,"turf",20.0,
+                20.0,"pedestrian",true,true);
         Thread streamThread = new Thread(() -> {
             try {
                 Log.d(TAG, "Creating the buffer of size " + BUFFER_SIZE);
